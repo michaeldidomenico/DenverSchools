@@ -20,18 +20,39 @@ library(tidyverse)
 library(readxl)
 library(lubridate)
 
-path <- "C://Users//Mike D//Desktop//"
-goo <- read_excel(paste0(path,"State Assessment Data Lab.xlsx"), skip=18)
+path <- "C://Users//Mike D//Desktop//Assessment Data//"
+math23file <- "2023 CMAS Math District and School Disaggregated  Achievement Results.xlsx" 
+eng23file <- "2023 CMAS ELA District and School Disaggregated Achievement Results.xlsx"
+math22file <- "2022 CMAS Math School and District Achievement Results - Disaggregated by Group.xlsx"
+eng22file <- "2022 CMAS ELA School and District Achievement Results - Disaggregated by Group.xlsx"
+math21file <- "2021 CMAS Math District and School Achievement Results Disaggregated by Subgroups - Required Tests.xlsx"
+eng21file <- "2021 CMAS ELA District and School Achievement Results Disaggregated by Subgroups - Required Tests.xlsx"
 
-goo2 <- goo[,1:6] %>%
-  fill(c('Academic Year','State/District/School','Test Name','Subject'),.direction="down") %>%
-  cbind(goo[,7:10]) %>%
-  rename(Year='Academic Year', StateDistrictSchool='State/District/School', Test='Test Name', ScoreCount='Score Count', MeanScore='Mean Scale Score', StDv='Standard Deviation', PctParticipation='% Participation') %>%
-  mutate(Year=as.numeric(substr(Year,1,4)),
-    ScoreCount=as.numeric(ScoreCount),
-    MeanScore=as.numeric(MeanScore),
-    StDv=as.numeric(StDv),
-    PctParticipation=as.numeric(PctParticipation))
+# note that I may need the summary for all. this is only the various subgroups
+mathRace23 <- read_excel(paste0(path, math23file), skip=12, sheet="Race Ethnicity") %>%
+  rename(District='District Name', 
+    DistrictCode='District Code',
+    School='School Name',
+    SchoolCode='School Code',
+    Race='Race/Ethnicity',
+    Records='Number of Total Records',
+    ValidScores='Number of Valid Scores',
+    NoScores='Number of No Scores',
+    ParticipationRate='Participation Rate',
+    MeanScale
+    ) %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Subject=="Math", FRL=="NA")
+
+engRace23 <- read_excel(paste0(path, eng23file), skip=12, sheet="Race Ethnicity")
+
+
+mathFRL23 <- read_excel(paste0(path, math23file), skip=13, sheet="Free Reduced Lunch")
+
+engFRL23 <- read_excel(paste0(path, eng23file), skip=12, sheet="Free Reduced Lunch")
+
+
+
 ```
 
 ```{r}
