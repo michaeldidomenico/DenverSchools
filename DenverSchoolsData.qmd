@@ -29,28 +29,193 @@ math21file <- "2021 CMAS Math District and School Achievement Results Disaggrega
 eng21file <- "2021 CMAS ELA District and School Achievement Results Disaggregated by Subgroups - Required Tests.xlsx"
 
 # note that I may need the summary for all. this is only the various subgroups
-mathRace23 <- read_excel(paste0(path, math23file), skip=12, sheet="Race Ethnicity") %>%
-  rename(District='District Name', 
-    DistrictCode='District Code',
-    School='School Name',
+mathRace23 <- read_excel(paste0(path, math23file), 
+  skip=12, sheet="Race Ethnicity") %>%
+  rename(District='District Name',
+    School='School Name') %>%
+  #   SchoolCode='School Code',
+  #   Race='Race/Ethnicity',
+  #   Records='Number of Total Records',
+  #   ValidScores='Number of Valid Scores',
+  #   NoScores='Number of No Scores',
+  #   ParticipationRate='Participation Rate',
+  #   MeanScaleScore='Mean Scale Score',
+  #   StDv='Standard Deviation',
+  #   NumDidNotMeet='Number Did Not Yet Meet Expectations',
+  #   PctDidNotMeet='Percent Did Not Yet Meet Expectations',
+  #   NumPartiallyMet='Number Partially Met Expectations',
+  #   PctPartiallyMet='Percent Partially Met Expectations',
+  #   NumApproached='Number Approached Expectations',
+  #   PctApproached='Percent Approached Expectations',
+  #   NumMet='Number Met Expectations',
+  #   PctMet='Percent Met Expectations',
+  #   NumExceeded='Number Exceeded Expectations',
+  #   PctExceededMet='Percent Exceeded Expectations',
+  #   NumMetExceeded='Number Met or Exceeded Expectations',
+  #   PctMetExceeded='Percent Met or Exceeded Expectations'
+  #   ) %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2023, Subject="Math", FRL="NA")
+mathRace22 <- read_excel(paste0(path, math22file), 
+  skip=12, sheet="Race Ethnicity") %>%
+  rename(District='District Name',
+    School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2022, Subject="Math", FRL="NA")
+mathRace21 <- read_excel(paste0(path, math21file), 
+  skip=27, sheet="Race Ethnicity") %>%
+  rename(District='District Name',
+    School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2021, Subject="Math", FRL="NA")
+
+
+
+engRace23 <- read_excel(paste0(path, eng23file), 
+  skip=12, sheet="Race Ethnicity") %>%
+  rename(District='District Name',
+    School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2023, Subject="English", FRL="NA")
+engRace22 <- read_excel(paste0(path, eng22file), 
+  skip=12, sheet="Race Ethnicity") %>%
+  rename(District='District Name',
+    School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2022, Subject="English", FRL="NA")
+engRace21 <- read_excel(paste0(path, eng21file), 
+  skip=27, sheet="Race Ethnicity") %>%
+  rename(District='District Name',
+    School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2021, Subject="English", FRL="NA")
+
+
+
+
+allRace <- rbind(mathRace23, 
+    engRace23,
+    mathRace22, 
+    engRace22,
+    mathRace21, 
+    engRace21) %>%
+  rename(DistrictCode='District Code',
     SchoolCode='School Code',
     Race='Race/Ethnicity',
     Records='Number of Total Records',
     ValidScores='Number of Valid Scores',
     NoScores='Number of No Scores',
     ParticipationRate='Participation Rate',
-    MeanScale
+    MeanScaleScore='Mean Scale Score',
+    StDv='Standard Deviation',
+    NumDidNotMeet='Number Did Not Yet Meet Expectations',
+    PctDidNotMeet='Percent Did Not Yet Meet Expectations',
+    NumPartiallyMet='Number Partially Met Expectations',
+    PctPartiallyMet='Percent Partially Met Expectations',
+    NumApproached='Number Approached Expectations',
+    PctApproached='Percent Approached Expectations',
+    NumMet='Number Met Expectations',
+    PctMet='Percent Met Expectations',
+    NumExceeded='Number Exceeded Expectations',
+    PctExceeded='Percent Exceeded Expectations',
+    NumMetExceeded='Number Met or Exceeded Expectations',
+    PctMetExceeded='Percent Met or Exceeded Expectations'
     ) %>%
+  mutate(MeanScaleScore=as.numeric(MeanScaleScore))
+
+
+# need to test for free reduced lunch 
+mathFRL23 <- read_excel(paste0(path, math23file), 
+  skip=13, sheet="Free Reduced Lunch") %>%
+  rename(District='District Name',
+    School='School Name') %>%
   filter(District=="Denver County 1", School!="All Schools") %>%
-  mutate(Subject=="Math", FRL=="NA")
+  mutate(Year=2023, Subject="Math", Race="NA")
 
-engRace23 <- read_excel(paste0(path, eng23file), skip=12, sheet="Race Ethnicity")
+mathFRL22 <- read_excel(paste0(path, math22file), 
+  skip=12, sheet="Free Reduced Lunch") %>%
+  rename(District='District Name',
+    School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2022, Subject="Math", Race="NA")
+
+mathFRL21 <- read_excel(paste0(path, math21file), 
+  skip=29, sheet="Free Reduced Lunch") %>%
+  rename(District='District Name',
+    School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2021, Subject="Math", Race="NA")
 
 
-mathFRL23 <- read_excel(paste0(path, math23file), skip=13, sheet="Free Reduced Lunch")
+engFRL23 <- read_excel(paste0(path, eng23file), 
+  skip=13, sheet="Free Reduced Lunch") %>%
+  rename(District='District Name',
+    School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2023, Subject="English", Race="NA")
 
-engFRL23 <- read_excel(paste0(path, eng23file), skip=12, sheet="Free Reduced Lunch")
+engFRL22 <- read_excel(paste0(path, eng22file), 
+  skip=12, sheet="Free Reduced Lunch")%>%
+  rename(District='District Name',
+    School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2022, Subject="English", Race="NA")
 
+engFRL21 <- read_excel(paste0(path, eng21file), 
+  skip=29, sheet="Free Reduced Lunch")%>%
+  rename(District='District Name',
+    School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2021, Subject="English", Race="NA")
+
+
+allFRL <- rbind(mathFRL23, 
+    engFRL23,
+    mathFRL22, 
+    engFRL22,
+    mathFRL21, 
+    engFRL21) %>%
+  rename(DistrictCode='District Code',
+    SchoolCode='School Code',
+    FRL='Free/Reduced Lunch Status',
+    Records='Number of Total Records',
+    ValidScores='Number of Valid Scores',
+    NoScores='Number of No Scores',
+    ParticipationRate='Participation Rate',
+    MeanScaleScore='Mean Scale Score',
+    StDv='Standard Deviation',
+    NumDidNotMeet='Number Did Not Yet Meet Expectations',
+    PctDidNotMeet='Percent Did Not Yet Meet Expectations',
+    NumPartiallyMet='Number Partially Met Expectations',
+    PctPartiallyMet='Percent Partially Met Expectations',
+    NumApproached='Number Approached Expectations',
+    PctApproached='Percent Approached Expectations',
+    NumMet='Number Met Expectations',
+    PctMet='Percent Met Expectations',
+    NumExceeded='Number Exceeded Expectations',
+    PctExceeded='Percent Exceeded Expectations',
+    NumMetExceeded='Number Met or Exceeded Expectations',
+    PctMetExceeded='Percent Met or Exceeded Expectations'
+    ) %>%
+  mutate(MeanScaleScore=as.numeric(MeanScaleScore))
+
+
+# a couple of inspections to see generally how much missing data, etc
+View(allRace %>%
+  filter(School %in% c("McKinley-Thatcher Elementary School","Steck Elementary School")))
+
+
+View(allRace %>%
+  filter(School %in% c("McKinley-Thatcher Elementary School","Steck Elementary School"),
+    Race=="White") %>%
+  select(School, Year, Grade, Subject, PctExceeded, PctMetExceeded) %>%
+  arrange(Year, Grade, Subject, School)) 
+
+View(allFRL %>%
+  filter(School %in% c("McKinley-Thatcher Elementary School","Steck Elementary School"),
+    FRL=="Not Free/Reduced Lunch Eligible") %>%
+  select(School, Year, Grade, Subject, PctExceeded, PctMetExceeded) %>%
+  arrange(Year, Grade, Subject, School)) 
 
 
 ```
@@ -58,13 +223,49 @@ engFRL23 <- read_excel(paste0(path, eng23file), skip=12, sheet="Free Reduced Lun
 ```{r}
 #| name: Plot
 
-plot1 <- ggplot(goo2 %>% filter(Grade %in% c("Grade 03","Grade 04","Grade 05")), aes(x=Year, y=MeanScore, color=Subject)) +
-  facet_grid(~Grade) +
+plotAllRaces <- ggplot(allRace %>% filter(Grade %in% c("03","04","05")), aes(x=Subject, y=MeanScaleScore)) +
+  facet_grid(Year~Grade) +
   geom_boxplot() +
-  geom_point(aes(x=Year, y=MeanScore), color="black", fill="black", data=goo2%>%filter(School=="DENVER COUNTY 1 (0880): STECK ELEMENTARY SCHOOL (8222)")) +
-    geom_point(aes(x=Year, y=MeanScore), color="yellow", fill="black", data=goo2%>%filter(School=="DENVER COUNTY 1 (0880): MC KINLEY-THATCHER ELEMENTARY SCHOOL (5702)"))
+  geom_point(aes(x=Subject, y=MeanScaleScore), color="green", fill="green", 
+    data=allRace %>% 
+      filter(Grade %in% c("03","04","05"), 
+        School=="Steck Elementary School")) +
+    geom_point(aes(x=Subject, y=MeanScaleScore), color="red", fill="red", 
+      data=allRace %>%
+        filter(Grade %in% c("03","04","05"), 
+          School=="McKinley-Thatcher Elementary School"))
 
-plot1
+plotWhite <- ggplot(allRace %>% filter(Grade %in% c("03","04","05"), Race=="White"), aes(x=Subject, y=MeanScaleScore)) +
+  facet_grid(Year~Grade) +
+  geom_boxplot() +
+  geom_point(aes(x=Subject, y=MeanScaleScore), color="green", fill="green", 
+    data=allRace %>% 
+      filter(Grade %in% c("03","04","05"), 
+        Race=="White", 
+        School=="Steck Elementary School")) +
+    geom_point(aes(x=Subject, y=MeanScaleScore), color="red", fill="red", 
+      data=allRace %>%
+        filter(Grade %in% c("03","04","05"), 
+          Race=="White",
+          School=="McKinley-Thatcher Elementary School"))
+
+plotNotFRL <- ggplot(allFRL %>% filter(Grade %in% c("03","04","05"), FRL=="Not Free/Reduced Lunch Eligible"), aes(x=Subject, y=MeanScaleScore)) +
+  facet_grid(Year~Grade) +
+  geom_boxplot() +
+  geom_point(aes(x=Subject, y=MeanScaleScore), color="green", fill="green", 
+    data=allFRL %>% 
+      filter(Grade %in% c("03","04","05"), 
+        FRL=="Not Free/Reduced Lunch Eligible", 
+        School=="Steck Elementary School")) +
+    geom_point(aes(x=Subject, y=MeanScaleScore), color="red", fill="red", 
+      data=allFRL %>%
+        filter(Grade %in% c("03","04","05"), 
+          FRL=="Not Free/Reduced Lunch Eligible",
+          School=="McKinley-Thatcher Elementary School"))
+
+plotAllRaces
+plotWhite
+plotNotFRL
 ```
 
 You can add options to executable code like this
