@@ -21,12 +21,67 @@ library(readxl)
 library(lubridate)
 
 path <- "C://Users//Mike D//Desktop//Assessment Data//"
+
+summary23file <- "2023 CMAS ELA and Math District and School Summary Achievement Results.xlsx"
+summary22file <- "2022 CMAS ELA and Math District and School Summary Achievement Results.xlsx"
+summary21file <- "2021 CMAS ELA and Math District and School Summary Achievement Results - Required Tests.xlsx"
+
 math23file <- "2023 CMAS Math District and School Disaggregated  Achievement Results.xlsx" 
 eng23file <- "2023 CMAS ELA District and School Disaggregated Achievement Results.xlsx"
 math22file <- "2022 CMAS Math School and District Achievement Results - Disaggregated by Group.xlsx"
 eng22file <- "2022 CMAS ELA School and District Achievement Results - Disaggregated by Group.xlsx"
 math21file <- "2021 CMAS Math District and School Achievement Results Disaggregated by Subgroups - Required Tests.xlsx"
 eng21file <- "2021 CMAS ELA District and School Achievement Results Disaggregated by Subgroups - Required Tests.xlsx"
+
+# read in summary tests
+summary23 <- read_excel(paste0(path, summary23file), 
+  skip=12, sheet="CMAS ELA and Math") %>%
+  rename(District='District Name',
+  School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2023, Race="NA", FRL="NA")
+
+summary22 <- read_excel(paste0(path, summary22file), 
+  skip=12, sheet="CMAS ELA and Math") %>%
+  rename(District='District Name',
+  School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2022, Race="NA", FRL="NA")
+
+summary21 <- read_excel(paste0(path, summary21file), 
+  skip=27, sheet="CMAS ELA and Math") %>%
+  rename(District='District Name',
+  School='School Name') %>%
+  filter(District=="Denver County 1", School!="All Schools") %>%
+  mutate(Year=2021, Race="NA", FRL="NA")
+
+summary <- bind_rows(summary23, summary22, summary21)%>%
+  rename(DistrictCode='District Code',
+    SchoolCode='School Code',
+    Subject=Content,
+    Records='Number of Total Records',
+    ValidScores='Number of Valid Scores',
+    NoScores='Number of No Scores',
+    ParticipationRate='Participation Rate',
+    MeanScaleScore='Mean Scale Score',
+    StDv='Standard Deviation',
+    NumDidNotMeet='Number Did Not Yet Meet Expectations',
+    PctDidNotMeet='Percent Did Not Yet Meet Expectations',
+    NumPartiallyMet='Number Partially Met Expectations',
+    PctPartiallyMet='Percent Partially Met Expectations',
+    NumApproached='Number Approached Expectations',
+    PctApproached='Percent Approached Expectations',
+    NumMet='Number Met Expectations',
+    PctMet='Percent Met Expectations',
+    NumExceeded='Number Exceeded Expectations',
+    PctExceeded='Percent Exceeded Expectations',
+    NumMetExceeded='Number Met or Exceeded Expectations',
+    PctMetExceeded='Percent Met or Exceeded Expectations'
+    ) %>%
+  mutate(MeanScaleScore=as.numeric(MeanScaleScore),
+    Subject=if_else(Subject %in% c("Mathematics","Math"), "Math", 
+      if_else(Subject %in% c("English Language Arts", "English"), "ELA", Subject), 
+    Subject))
 
 # note that I may need the summary for all. this is only the various subgroups
 mathRace23 <- read_excel(paste0(path, math23file), 
@@ -223,44 +278,58 @@ View(allFRL %>%
 ```{r}
 #| name: Plot
 
-plotAllRaces <- ggplot(allRace %>% filter(Grade %in% c("03","04","05")), aes(x=Subject, y=MeanScaleScore)) +
+plotSummary <- ggplot(summary %>% filter(Subject!="Spanish Language Arts"), aes(x=Subject, y=MeanScaleScore)) +
   facet_grid(Year~Grade) +
   geom_boxplot() +
   geom_point(aes(x=Subject, y=MeanScaleScore), color="green", fill="green", 
-    data=allRace %>% 
-      filter(Grade %in% c("03","04","05"), 
+    data=summary %>% 
+      filter(Subject!="Spanish Language Arts", 
         School=="Steck Elementary School")) +
     geom_point(aes(x=Subject, y=MeanScaleScore), color="red", fill="red", 
-      data=allRace %>%
-        filter(Grade %in% c("03","04","05"), 
+      data=summary %>%
+        filter(Subject!="Spanish Language Arts", 
           School=="McKinley-Thatcher Elementary School"))
 
-plotWhite <- ggplot(allRace %>% filter(Grade %in% c("03","04","05"), Race=="White"), aes(x=Subject, y=MeanScaleScore)) +
+plotWhite <- ggplot(allRace %>% filter(Grade %in% c("01","02","03","04","05","AllGrades"), Race=="White"), aes(x=Subject, y=MeanScaleScore)) +
   facet_grid(Year~Grade) +
   geom_boxplot() +
   geom_point(aes(x=Subject, y=MeanScaleScore), color="green", fill="green", 
     data=allRace %>% 
-      filter(Grade %in% c("03","04","05"), 
+      filter(Grade %in% c("01","02","03","04","05","AllGrades"), 
         Race=="White", 
         School=="Steck Elementary School")) +
     geom_point(aes(x=Subject, y=MeanScaleScore), color="red", fill="red", 
       data=allRace %>%
-        filter(Grade %in% c("03","04","05"), 
+        filter(Grade %in% c("01","02","03","04","05","AllGrades"), 
           Race=="White",
           School=="McKinley-Thatcher Elementary School"))
 
-plotNotFRL <- ggplot(allFRL %>% filter(Grade %in% c("03","04","05"), FRL=="Not Free/Reduced Lunch Eligible"), aes(x=Subject, y=MeanScaleScore)) +
+plotNotFRL <- ggplot(allFRL %>% filter(Grade %in% c("01","02","03","04","05","AllGrades"), FRL=="Not Free/Reduced Lunch Eligible"), aes(x=Subject, y=MeanScaleScore)) +
   facet_grid(Year~Grade) +
   geom_boxplot() +
   geom_point(aes(x=Subject, y=MeanScaleScore), color="green", fill="green", 
     data=allFRL %>% 
-      filter(Grade %in% c("03","04","05"), 
+      filter(Grade %in% c("01","02","03","04","05","AllGrades"), 
         FRL=="Not Free/Reduced Lunch Eligible", 
         School=="Steck Elementary School")) +
     geom_point(aes(x=Subject, y=MeanScaleScore), color="red", fill="red", 
       data=allFRL %>%
-        filter(Grade %in% c("03","04","05"), 
+        filter(Grade %in% c("01","02","03","04","05","AllGrades"), 
           FRL=="Not Free/Reduced Lunch Eligible",
+          School=="McKinley-Thatcher Elementary School"))
+
+plotFRL <- ggplot(allFRL %>% filter(Grade %in% c("01","02","03","04","05"), FRL=="Free/Reduced Lunch Eligible"), aes(x=Subject, y=MeanScaleScore)) +
+  facet_grid(Year~Grade) +
+  geom_boxplot() +
+  geom_point(aes(x=Subject, y=MeanScaleScore), color="green", fill="green", 
+    data=allFRL %>% 
+      filter(Grade %in% c("01","02","03","04","05"), 
+        FRL=="Free/Reduced Lunch Eligible", 
+        School=="Steck Elementary School")) +
+    geom_point(aes(x=Subject, y=MeanScaleScore), color="red", fill="red", 
+      data=allFRL %>%
+        filter(Grade %in% c("01","02","03","04","05"), 
+          FRL=="Free/Reduced Lunch Eligible",
           School=="McKinley-Thatcher Elementary School"))
 
 plotAllRaces
