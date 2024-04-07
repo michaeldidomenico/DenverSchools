@@ -278,31 +278,50 @@ View(allFRL %>%
 ```{r}
 #| name: Plot
 
-plotSummary <- ggplot(summary %>% filter(Subject!="Spanish Language Arts"), aes(x=Subject, y=MeanScaleScore)) +
+plotSummary <- ggplot(summary %>% filter(Subject!="Spanish Language Arts", Grade %in% c("01","02","03","04","05","All Grades")), aes(x=Subject, y=MeanScaleScore)) +
   facet_grid(Year~Grade) +
   geom_boxplot() +
-  geom_point(aes(x=Subject, y=MeanScaleScore), color="green", fill="green", 
+  geom_point(aes(x=Subject, y=MeanScaleScore), 
+      color="green", fill="green", 
     data=summary %>% 
       filter(Subject!="Spanish Language Arts", 
-        School=="Steck Elementary School")) +
-    geom_point(aes(x=Subject, y=MeanScaleScore), color="red", fill="red", 
+        School=="Steck Elementary School",
+        Grade %in% c("01","02","03","04","05","All Grades"))) +
+    geom_point(aes(x=Subject, y=MeanScaleScore), 
+        color="red", fill="red", shape="square", 
       data=summary %>%
         filter(Subject!="Spanish Language Arts", 
-          School=="McKinley-Thatcher Elementary School"))
+          School=="McKinley-Thatcher Elementary School",
+          Grade %in% c("01","02","03","04","05","All Grades")))+
+    geom_point(aes(x=Subject, y=MeanScaleScore), 
+        color="dark blue", fill="dark blue", shape="triangle", 
+      data=summary %>%
+        filter(Subject!="Spanish Language Arts", 
+          School=="Steele Elementary School",
+          Grade %in% c("01","02","03","04","05","All Grades")))
 
 plotWhite <- ggplot(allRace %>% filter(Grade %in% c("01","02","03","04","05","AllGrades"), Race=="White"), aes(x=Subject, y=MeanScaleScore)) +
   facet_grid(Year~Grade) +
   geom_boxplot() +
-  geom_point(aes(x=Subject, y=MeanScaleScore), color="green", fill="green", 
+  geom_point(aes(x=Subject, y=MeanScaleScore), 
+      color="green", fill="green", 
     data=allRace %>% 
       filter(Grade %in% c("01","02","03","04","05","AllGrades"), 
         Race=="White", 
         School=="Steck Elementary School")) +
-    geom_point(aes(x=Subject, y=MeanScaleScore), color="red", fill="red", 
+    geom_point(aes(x=Subject, y=MeanScaleScore), 
+        color="red", fill="red", shape="square", 
       data=allRace %>%
         filter(Grade %in% c("01","02","03","04","05","AllGrades"), 
           Race=="White",
-          School=="McKinley-Thatcher Elementary School"))
+          School=="McKinley-Thatcher Elementary School")) +
+    geom_point(aes(x=Subject, y=MeanScaleScore), 
+        color="dark blue", fill="dark blue", shape="triangle", 
+      data=allRace %>%
+        filter(Grade %in% c("01","02","03","04","05","AllGrades"), 
+          Race=="White",
+          School=="Steele Elementary School"))
+  
 
 plotNotFRL <- ggplot(allFRL %>% filter(Grade %in% c("01","02","03","04","05","AllGrades"), FRL=="Not Free/Reduced Lunch Eligible"), aes(x=Subject, y=MeanScaleScore)) +
   facet_grid(Year~Grade) +
@@ -312,11 +331,19 @@ plotNotFRL <- ggplot(allFRL %>% filter(Grade %in% c("01","02","03","04","05","Al
       filter(Grade %in% c("01","02","03","04","05","AllGrades"), 
         FRL=="Not Free/Reduced Lunch Eligible", 
         School=="Steck Elementary School")) +
-    geom_point(aes(x=Subject, y=MeanScaleScore), color="red", fill="red", 
+    geom_point(aes(x=Subject, y=MeanScaleScore), 
+        color="red", fill="red", shape="square", 
       data=allFRL %>%
         filter(Grade %in% c("01","02","03","04","05","AllGrades"), 
           FRL=="Not Free/Reduced Lunch Eligible",
-          School=="McKinley-Thatcher Elementary School"))
+          School=="McKinley-Thatcher Elementary School")) +
+    geom_point(aes(x=Subject, y=MeanScaleScore), 
+        color="dark blue", fill="dark blue", shape="triangle", 
+      data=allFRL %>%
+        filter(Grade %in% c("01","02","03","04","05","AllGrades"), 
+          FRL=="Not Free/Reduced Lunch Eligible",
+          School=="Steele Elementary School"))
+
 
 plotFRL <- ggplot(allFRL %>% filter(Grade %in% c("01","02","03","04","05"), FRL=="Free/Reduced Lunch Eligible"), aes(x=Subject, y=MeanScaleScore)) +
   facet_grid(Year~Grade) +
@@ -332,7 +359,7 @@ plotFRL <- ggplot(allFRL %>% filter(Grade %in% c("01","02","03","04","05"), FRL=
           FRL=="Free/Reduced Lunch Eligible",
           School=="McKinley-Thatcher Elementary School"))
 
-plotAllRaces
+plotSummary
 plotWhite
 plotNotFRL
 ```
